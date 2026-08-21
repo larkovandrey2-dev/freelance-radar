@@ -108,7 +108,9 @@ class TelegramScanner:
                 if last_seen:
                     messages = self.client.iter_messages(entity, min_id=last_seen, reverse=True)
                 else:
-                    messages = self.client.iter_messages(entity, limit=self.settings.backfill_limit, reverse=True)
+                    # For a brand-new source fetch only its newest N messages.
+                    # A reverse iterator may walk a complete history.
+                    messages = self.client.iter_messages(entity, limit=self.settings.backfill_limit)
                 async for message in messages:
                     await self._process(message, target, entity)
             except FloodWaitError as exc:

@@ -11,7 +11,11 @@ def normalize_text(value: str) -> str:
     # Tracking parameters make otherwise identical posts look different to the
     # cache.  Keep meaningful query parameters, only remove common trackers.
     def clean_url(match: re.Match[str]) -> str:
-        parts = urlsplit(match.group(0))
+        try:
+            parts = urlsplit(match.group(0))
+        except ValueError:
+            # Chat text is untrusted and may contain malformed bracketed URLs.
+            return match.group(0)
         query = [(key, item) for key, item in parse_qsl(parts.query, keep_blank_values=True)
                  if not key.lower().startswith(("utm_", "fbclid", "gclid", "yclid"))]
         return urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(query), ""))
