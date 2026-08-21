@@ -1,0 +1,33 @@
+# Укажите только каналы/группы, в которых уже состоит ваш Telegram-аккаунт.
+telegram: []
+discord: []
+# Independent local Discord producer. Add only channels the account can read.
+# `name` is recorded with every accepted packet.
+discord_listener: []
+reddit:
+  - name: n8n
+    subreddit: n8n
+    enabled: true
+  - name: ai_agents
+    subreddit: AI_Agents
+    enabled: true
+
+# Phase 3 uses public Discourse JSON first and automatically falls back to RSS.
+# category_url must be the human-readable category URL, without .json or .rss.
+discourse:
+  - name: n8n_jobs
+    category_url: https://community.n8n.io/c/jobs/13
+    enabled: true
+    tags: [jobs, direct_hire]
+  - name: n8n_workflow_help
+    category_url: https://community.n8n.io/c/help-me-build-my-workflow/36
+    enabled: true
+    tags: [shadow_leads]
+  - name: make_hire_help
+    category_url: https://community.make.com/c/hire-a-pro/hire-help/74
+    enabled: true
+    tags: [jobs, direct_hire]
+  - name: cursor_support
+    category_url: https://forum.cursor.com/c/support/21
+    enabled: true
+    tags: [shadow_leads, vibecode_rescue]

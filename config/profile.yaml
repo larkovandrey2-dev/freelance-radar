@@ -1,0 +1,18 @@
+skills:
+  - Python
+  - FastAPI
+  - PostgreSQL
+  - Docker
+  - REST API and webhooks
+  - AI/LLM integrations
+  - n8n and backend integrations
+  - debugging AI-generated code
+projects:
+  - name: AI Desk
+    description: FastAPI/PostgreSQL AI system with multi-channel intake, dashboard and Docker deployment.
+  - name: Lead Radar
+    description: Lead monitoring system with AI analysis, scoring and personal offer generation.
+positioning:
+  - Быстро собираю рабочие MVP.
+  - Берусь за API и integration-heavy задачи.
+  - Довожу AI-generated прототипы до deployment.

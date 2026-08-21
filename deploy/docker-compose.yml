@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lead_radar}
+      POSTGRES_USER: ${POSTGRES_USER:-lead_radar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  radar:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    env_file: ../.env
+    environment:
+      POSTGRES_HOST: postgres
+    ports:
+      - "127.0.0.1:${HOST_PORT:-8000}:8000"
+      - "127.0.0.1:${LOCAL_GATEWAY_PORT:-8765}:8765"
+    volumes:
+      - telegram_data:/data/telegram
+      - gateway_data:/data/gateway
+      - ../config:/app/config:ro
+    networks:
+      - default
+      - caddy
+    depends_on:
+      postgres:
+        condition: service_healthy
+      byedpi:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # Per-adapter proxy selection is configured in .env.  This sidecar is never
+  # published on the host; BYEDPI_ARGS must make ciadpi listen on 1080 when a
+  # transport is set to `byedpi` (for example: --port 1080).
+  byedpi:
+    build:
+      context: ..
+      dockerfile: deploy/byedpi/Dockerfile
+    environment:
+      BYEDPI_ARGS: ${BYEDPI_ARGS:---port 1080}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pidof ciadpi >/dev/null"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  postgres_data:
+  telegram_data:
+  gateway_data:
+
+# Existing Caddy project on the server. Caddy reaches `radar:8000` through
+# this private network; no public application port is needed for the panel.
+networks:
+  caddy:
+    external: true
+    name: ${CADDY_NETWORK:-ai-desk-staging_default}

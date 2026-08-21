@@ -1,0 +1,14 @@
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+SQLAlchemy==2.0.40
+asyncpg==0.30.0
+pydantic-settings==2.9.1
+PyYAML==6.0.2
+telethon==1.40.0
+httpx[socks]==0.28.1
+python-dotenv==1.1.0
+aiosqlite==0.21.0
+websockets==15.0.1
+# Optional in operation until DISCORD_USER_TOKEN is configured; provides the
+# passive user-account gateway listener required by the Discord adapter.
+discord.py-self>=2.0,<3

@@ -1,0 +1,5 @@
+# Root entry point keeps `docker compose …` compatible with the operational
+# commands in the specification. The implementation lives in deploy/.
+include:
+  - path: deploy/docker-compose.yml
+    env_file: .env
