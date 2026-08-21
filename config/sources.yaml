@@ -4,13 +4,9 @@ discord: []
 # Independent local Discord producer. Add only channels the account can read.
 # `name` is recorded with every accepted packet.
 discord_listener: []
-reddit:
-  - name: n8n
-    subreddit: n8n
-    enabled: true
-  - name: ai_agents
-    subreddit: AI_Agents
-    enabled: true
+# Enable Reddit explicitly only when it is needed; the initial server rollout
+# collects Telegram and Discourse forums only.
+reddit: []
 
 # Phase 3 uses public Discourse JSON first and automatically falls back to RSS.
 # category_url must be the human-readable category URL, without .json or .rss.
