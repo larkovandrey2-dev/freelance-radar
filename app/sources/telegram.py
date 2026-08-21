@@ -106,7 +106,10 @@ class TelegramScanner:
             try:
                 entity = await self.client.get_entity(target.entity)
                 if last_seen:
-                    messages = self.client.iter_messages(entity, min_id=last_seen, reverse=True)
+                    # Cap a restart catch-up too: a bad cursor or a long outage
+                    # must not turn into an unbounded historical import.
+                    messages = self.client.iter_messages(entity, min_id=last_seen, reverse=True,
+                                                         limit=self.settings.backfill_limit)
                 else:
                     # For a brand-new source fetch only its newest N messages.
                     # A reverse iterator may walk a complete history.
