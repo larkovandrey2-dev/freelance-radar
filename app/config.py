@@ -54,6 +54,7 @@ class Settings(BaseSettings):
     yandex_openai_base_url: str = Field(default="", validation_alias=AliasChoices("YANDEX_OPENAI_BASE_URL"))
     yandex_transport: TransportName = TransportName.DIRECT
     lead_alert_threshold: int = Field(default=72, ge=0, le=100)
+    max_alert_age_hours: int = Field(default=24, ge=1, le=168)
     rejected_audit_rate: float = Field(default=0.01, ge=0, le=1)
     rejected_audit_daily_limit: int = Field(default=15, ge=0, le=20)
 

@@ -47,6 +47,8 @@ Enabled sources in [`config/sources.yaml`](config/sources.yaml) use public Disco
 
 Every collected message is normalized, scored by an explainable keyword prefilter, then sent to Yandex Qwen only when it is a candidate (or a bounded 1% audit sample). Analyses are cached by SHA-256 of normalized text. Failed model calls stay pending and retry after 5s, 20s, 60s, and then 5m; strong rule matches can alert without AI. Set `LEAD_ALERT_THRESHOLD` (default `72`) to tune delivery.
 
+Alerts are deliberately freshness-gated: `MAX_ALERT_AGE_HOURS=24` prevents historical startup backfill from becoming a notification. Increase it only if delayed opportunities are useful to you.
+
 ## Generic local stream gateway
 
 Set `AUTH_SECRET_KEY` and `MY_INTERNAL_ID` in `.env` to enable a local WebSocket listener. It is published only as `127.0.0.1:8765` by default and accepts one token text frame followed by JSON packets. SQLite deduplication is persisted in the `gateway_data` Docker volume; accepted data is then written to `raw_messages` and automatically enters the processing queue.

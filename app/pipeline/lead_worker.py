@@ -93,7 +93,9 @@ class LeadWorker:
                 lead.final_score = self._score(analysis, raw)
                 session.add(LeadAnalysis(lead_id=lead.id, model=self.settings.active_yandex_model_uri,
                     payload=json.dumps(analysis, ensure_ascii=False)))
-                if bool(analysis.get("relevant")) and lead.final_score >= self.settings.lead_alert_threshold:
+                age_hours = max(0, (now - raw.published_at).total_seconds() / 3600)
+                if (bool(analysis.get("relevant")) and lead.final_score >= self.settings.lead_alert_threshold
+                        and age_hours <= self.settings.max_alert_age_hours):
                     await self.notifier.send(lead, raw, analysis)
                     lead.notified_at, lead.status = now, "notified"
                 else:

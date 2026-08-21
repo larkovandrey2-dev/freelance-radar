@@ -25,5 +25,6 @@ discourse:
     tags: [jobs, direct_hire]
   - name: cursor_support
     category_url: https://forum.cursor.com/c/support/21
-    enabled: true
+    # General product-support traffic is currently too noisy for first rollout.
+    enabled: false
     tags: [shadow_leads, vibecode_rescue]
