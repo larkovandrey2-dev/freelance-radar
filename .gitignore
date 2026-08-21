@@ -1,4 +1,5 @@
 .env
+.DS_Store
 *.session
 *.session-journal
 __pycache__/
@@ -7,4 +8,3 @@ __pycache__/
 .venv/
 data/telegram/*
 !data/telegram/.gitkeep
-
