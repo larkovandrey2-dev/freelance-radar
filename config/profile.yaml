@@ -31,19 +31,19 @@ portfolio:
     name: AI Desk
     tags: [Python, FastAPI, PostgreSQL, Docker, REST API, LLM, Telegram, integrations, dashboard, automation, deployment]
     strengths: [backend, API integrations, AI integrations, production architecture]
-    description: AI-система автоматизации обращений: FastAPI/PostgreSQL backend, LLM-интеграции, dashboard и Docker deployment.
+    description: "AI-система автоматизации обращений: FastAPI/PostgreSQL backend, LLM-интеграции, dashboard и Docker deployment."
   - id: mipt_assistant
     name: MIPT Telecom AI Assistant
     tags: [AI, backend, integrations, production, voice]
     strengths: [production AI, integrations]
-    description: Коммерческий AI-ассистент с backend, внешними интеграциями и production deployment.
+    description: "Коммерческий AI-ассистент с backend, внешними интеграциями и production deployment."
   - id: lead_radar
     name: Lead Radar
     tags: [Python, Telethon, Telegram, scraping, monitoring, PostgreSQL, Docker, LLM]
     strengths: [Telegram, monitoring, parsing, async Python, AI analysis]
-    description: Real-time мониторинг Telegram и внешних источников с AI scoring, deduplication и alerts.
+    description: "Real-time мониторинг Telegram и внешних источников с AI scoring, deduplication и alerts."
   - id: ai_analytics
     name: AI Analytics Platform
     tags: [API, analytics, scraping, AI, dashboard]
     strengths: [external APIs, analytics, AI processing]
-    description: Веб-система анализа аккаунтов и контента с внешними API, AI-анализом и dashboard.
+    description: "Веб-система анализа аккаунтов и контента с внешними API, AI-анализом и dashboard."
