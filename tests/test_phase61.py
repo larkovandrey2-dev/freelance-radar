@@ -41,5 +41,10 @@ class Phase61Tests(unittest.TestCase):
         selected = select_projects(profile, text="Need Telegram Telethon parser", analysis={"known_components": ["Telegram", "parser"]})
         self.assertEqual([item["id"] for item in selected], ["radar"])
 
+    def test_for_hire_post_is_never_a_candidate(self):
+        result = evaluate("[FOR HIRE] Python and n8n automation developer available for freelance work", source_tags=["soft_filter"])
+        self.assertTrue(result.signals["negative"])
+        self.assertFalse(result.candidate)
+
 if __name__ == "__main__":
     unittest.main()

@@ -76,6 +76,12 @@ class LeadWorker:
             lead, raw = item
             prefilter = evaluate(raw.raw_text, raw.title, raw.metadata_.get("tags", []))
             lead.prefilter_score = prefilter.score
+            # Audit sampling is for learning missed buyer intent, never for
+            # surfacing explicit resumes / service offers to the user.
+            if prefilter.signals["negative"]:
+                lead.status = "rejected"
+                await session.commit()
+                return True
             if not prefilter.candidate and not self._audit_allowed():
                 lead.status = "rejected"
                 await session.commit()
