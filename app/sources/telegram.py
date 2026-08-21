@@ -25,6 +25,7 @@ class TelegramTarget:
     name: str
     entity: str | int
     enabled: bool = True
+    tags: tuple[str, ...] = ()
 
 
 def load_telegram_targets(path: Path) -> list[TelegramTarget]:
@@ -35,7 +36,8 @@ def load_telegram_targets(path: Path) -> list[TelegramTarget]:
     for item in data.get("telegram", []):
         if "name" not in item or "entity" not in item:
             raise ValueError("Every Telegram source requires name and entity")
-        targets.append(TelegramTarget(name=item["name"], entity=item["entity"], enabled=item.get("enabled", True)))
+        targets.append(TelegramTarget(name=item["name"], entity=item["entity"], enabled=item.get("enabled", True),
+                                      tags=tuple(str(tag) for tag in item.get("tags", []))))
     return [target for target in targets if target.enabled]
 
 
@@ -133,7 +135,8 @@ class TelegramScanner:
             source_target_id=target_id, external_id=str(message.id), author_id=str(getattr(sender, "id", "")) or None,
             author_name=author_name, author_username=username, published_at=message.date, url=url,
             text=message.message, view_count=getattr(message, "views", None),
-            metadata={"telegram_user_url": f"https://t.me/{username}" if username else None})
+            metadata={"telegram_user_url": f"https://t.me/{username}" if username else None, "tags": list(target.tags),
+                      "source_name": target.name})
         async with self.sessions() as session:
             repo = RadarRepository(session)
             await repo.ensure_target(source="telegram", target_id=target_id, name=target.name)

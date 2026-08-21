@@ -74,7 +74,7 @@ class LeadWorker:
             item = row.first()
             if not item: return False
             lead, raw = item
-            prefilter = evaluate(raw.raw_text, raw.title)
+            prefilter = evaluate(raw.raw_text, raw.title, raw.metadata_.get("tags", []))
             lead.prefilter_score = prefilter.score
             if not prefilter.candidate and not self._audit_allowed():
                 lead.status = "rejected"
@@ -89,13 +89,13 @@ class LeadWorker:
                     analysis, usage = await self.analyzer.analyze(source=raw.source, message=raw.raw_text, title=raw.title,
                         age=age, reply_count=raw.reply_count, signals=prefilter.signals)
                     session.add(LLMUsage(model=self.settings.active_yandex_model_uri, **usage))
+                analysis = self._enrich_analysis(analysis)
                 lead.lead_type = str(analysis.get("lead_type", "NOISE"))
                 lead.final_score = self._score(analysis, raw)
                 session.add(LeadAnalysis(lead_id=lead.id, model=self.settings.active_yandex_model_uri,
                     payload=json.dumps(analysis, ensure_ascii=False)))
                 age_hours = max(0, (now - raw.published_at).total_seconds() / 3600)
-                if (bool(analysis.get("relevant")) and lead.final_score >= self.settings.lead_alert_threshold
-                        and age_hours <= self.settings.max_alert_age_hours):
+                if self._should_alert(analysis, raw, lead.final_score, age_hours):
                     await self.notifier.send(lead, raw, analysis)
                     lead.notified_at, lead.status = now, "notified"
                 else:
@@ -105,12 +105,50 @@ class LeadWorker:
                 await self._handle_analysis_failure(session, lead, raw, prefilter.score, str(exc))
             return True
 
+    @staticmethod
+    def _enrich_analysis(analysis: dict) -> dict:
+        """Keep old cached analyses compatible with the personal-fit schema."""
+        result = dict(analysis)
+        result.setdefault("fit_for_user", result.get("fit", 0))
+        result.setdefault("delivery_confidence", result.get("fit_for_user", result.get("fit", 0)))
+        result.setdefault("delegation_probability", result.get("purchase_intent", 0))
+        result.setdefault("task_shape", {"small": "SMALL_PROJECT", "medium": "MEDIUM_PROJECT", "large": "LARGE_PROJECT"}.get(result.get("complexity"), "UNKNOWN"))
+        result.setdefault("integration_risk", "UNKNOWN")
+        result.setdefault("learning_cost", "UNKNOWN")
+        for key, default in (("known_components", []), ("unknown_integrations", []), ("main_unknowns", []),
+                             ("why_can_deliver_ru", []), ("risk_explanation_ru", ""),
+                             ("unknowns_are_learnable", False), ("requires_client_credentials", False),
+                             ("requires_paid_accounts_for_testing", False), ("requires_enterprise_expertise", False)):
+            result.setdefault(key, default)
+        return result
+
+    def _should_alert(self, analysis: dict, raw: RawMessage, score: int, age_hours: float) -> bool:
+        if not bool(analysis.get("relevant")) or age_hours > self.settings.max_alert_age_hours:
+            return False
+        delivery = float(analysis.get("delivery_confidence", 0))
+        high_value_risk = score >= 85 and delivery >= 5
+        if score < self.settings.lead_alert_threshold or (delivery < 7 and not high_value_risk):
+            return False
+        tags = {str(tag).lower() for tag in raw.metadata_.get("tags", [])}
+        if "shadow_leads" in tags and float(analysis.get("delegation_probability", 0)) < 7:
+            return False
+        if analysis.get("task_shape") == "TOO_LARGE" and not high_value_risk:
+            return False
+        return True
+
     def _score(self, analysis: dict, raw: RawMessage) -> int:
         freshness = max(0, 10 - int((datetime.now(timezone.utc) - raw.published_at).total_seconds() // 3600))
         competition = int(raw.metadata_.get("competition_score", 6) or 6)
-        bonus = {"VIBECODE_RESCUE": 5, "AGENCY_OVERFLOW": 7}.get(analysis.get("lead_type"), 0)
-        score = (float(analysis.get("purchase_intent", 0)) * 3 + float(analysis.get("fit", 0)) * 3 + freshness * 1.5 +
-                 float(analysis.get("urgency", 0)) + competition + bonus)
+        shape_score = {"MICRO_TASK": 10, "SMALL_PROJECT": 9, "MEDIUM_PROJECT": 6,
+                       "LARGE_PROJECT": 2, "TOO_LARGE": 0}.get(analysis.get("task_shape"), 4)
+        bonus = {"MICRO_TASK": 6, "SMALL_PROJECT": 5, "VIBECODE_RESCUE": 5, "AGENCY_OVERFLOW": 6}.get(analysis.get("task_shape"), 0)
+        bonus += {"VIBECODE_RESCUE": 5, "AGENCY_OVERFLOW": 6}.get(analysis.get("lead_type"), 0)
+        penalty = {"HIGH": 10}.get(analysis.get("integration_risk"), 0)
+        if analysis.get("task_shape") == "TOO_LARGE": penalty += 15
+        if analysis.get("requires_enterprise_expertise"): penalty += 15
+        score = (float(analysis.get("purchase_intent", 0)) * 2 + float(analysis.get("delivery_confidence", 0)) * 2.5 +
+                 float(analysis.get("fit_for_user", 0)) * 2 + shape_score * 1.2 + freshness + competition * .7 +
+                 float(analysis.get("urgency", 0)) * .6 + bonus - penalty)
         return max(0, min(100, round(score)))
 
     async def _handle_analysis_failure(self, session, lead: Lead, raw: RawMessage, prefilter_score: int, error: str) -> None:

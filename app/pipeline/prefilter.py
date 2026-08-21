@@ -29,7 +29,9 @@ FIT_STRONG = ("ai agent", "rag", "openai", "claude", "qwen", "gemini", "n8n", "z
     "cursor", "lovable", "supabase", "firebase", "authentication", "rls", "edge function", "serverless")
 FIT_GENERIC = ("ai", "llm", "agent", "make", "workflow", "automation", "automate", "api", "integration",
     "crm", "telegram", "whatsapp", "max", "python", "backend", "vps", "server", "parser", "prototype",
-    "bolt", "v0", "auth", "database")
+    "bolt", "v0", "auth", "database", "django", "aiogram", "telethon", "парсер", "скрапинг", "скрипт",
+    "бот", "бэкенд", "интеграция", "вебхук", "админка", "таблица", "excel", "csv", "google sheets",
+    "доработка", "исправить", "починить", "деплой", "развернуть")
 VIBECODE = ("almost finished", "almost done", "need help finishing", "need someone to finish", "finish my app",
     "built with lovable", "built in lovable", "built with bolt", "built in bolt", "built with cursor",
     "cursor generated", "ai generated app", "ai built app", "vibe coded", "vibecoded", "prototype works but",
@@ -51,6 +53,7 @@ NEGATIVE = ("for hire", "available for work", "available for hire", "my services
     "hire me", "open to work", "ищу работу", "предлагаю услуги", "возьму заказы", "мое портфолио",
     "готов к работе", "internship", "intern", "senior full-time", "full time only", "onsite only", "курс",
     "обучение", "вебинар", "менторство продаю")
+SOFT_SOURCE_INTENT = ("need a", "needed", "требуется", "требуется разработчик", "ищется", "задача", "оплата за", "частичная занятость", "короткий проект")
 
 @dataclass(frozen=True)
 class PrefilterResult:
@@ -58,17 +61,22 @@ class PrefilterResult:
     signals: dict[str, list[str]]
     @property
     def candidate(self) -> bool:
-        return self.score >= 5 or bool(self.signals["vibecode"] or self.signals["agency"])
+        return self.score >= 5 or bool(self.signals["vibecode"] or self.signals["agency"] or self.signals["soft_candidate"])
 
 def _hits(text: str, terms: tuple[str, ...]) -> list[str]:
     return [term for term in terms if term in text]
 
-def evaluate(text: str, title: str | None = None) -> PrefilterResult:
+def evaluate(text: str, title: str | None = None, source_tags: list[str] | tuple[str, ...] = ()) -> PrefilterResult:
     value = normalize_text(" ".join(filter(None, (title, text))))
     signals = {"purchase_strong": _hits(value, PURCHASE_STRONG), "purchase_weak": _hits(value, PURCHASE_WEAK),
         "fit_strong": _hits(value, FIT_STRONG), "fit_generic": _hits(value, FIT_GENERIC),
         "vibecode": _hits(value, VIBECODE), "agency": _hits(value, AGENCY), "urgency": _hits(value, URGENCY),
         "negative": _hits(value, NEGATIVE)}
+    soft_source = "soft_filter" in {str(tag).lower() for tag in source_tags}
+    signals["soft_source_intent"] = _hits(value, SOFT_SOURCE_INTENT) if soft_source else []
+    has_intent = bool(signals["purchase_strong"] or signals["purchase_weak"] or signals["soft_source_intent"])
+    has_technical_work = bool(signals["fit_strong"] or signals["fit_generic"])
+    signals["soft_candidate"] = ["freelance technical task"] if soft_source and has_intent and has_technical_work and not signals["negative"] else []
     score = (5 * bool(signals["purchase_strong"]) + 2 * bool(signals["purchase_weak"]) +
              2 * bool(signals["fit_strong"]) + bool(signals["fit_generic"]) +
              5 * bool(signals["vibecode"]) + 5 * bool(signals["agency"]) + 2 * bool(signals["urgency"]) -

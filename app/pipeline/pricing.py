@@ -18,6 +18,8 @@ def _currency(value: str | None) -> str:
 
 def calculate_quote(analysis: dict, settings: Settings) -> Quote:
     budget = analysis.get("budget") or {}
+    if str(analysis.get("integration_risk", "")).upper() == "HIGH" or float(analysis.get("delivery_confidence", 10) or 0) < 7:
+        return Quote(price="after a short technical review", deadline="after a short technical review")
     effort = analysis.get("estimated_effort") or {}
     hours = max(0, int(effort.get("max_hours") or effort.get("min_hours") or 0))
     complexity = str(analysis.get("complexity") or "small").lower()

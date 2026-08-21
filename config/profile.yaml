@@ -16,3 +16,34 @@ positioning:
   - Быстро собираю рабочие MVP.
   - Берусь за API и integration-heavy задачи.
   - Довожу AI-generated прототипы до deployment.
+
+capabilities:
+  strong: [Python, FastAPI, PostgreSQL, REST API, webhooks, Docker, VPS deployment, Telegram Bot API, Telethon, LLM API integrations, RAG, parsers, scraping, data processing, backend integrations, debugging existing code, debugging AI-generated code]
+  can_learn_quickly: [n8n, Make, Supabase, Airtable, common SaaS APIs, OAuth integrations, Google Sheets, Gmail, Slack, Stripe basic integrations, CRM integrations, frontend modifications, AI-generated web applications]
+  high_risk: [SAP, NetSuite, ServiceNow, Oracle ERP, complex Salesforce administration, Microsoft Dynamics enterprise, banking integrations, enterprise accounting systems, complex corporate SSO, proprietary enterprise APIs, native mobile development, Kubernetes-heavy DevOps]
+  preferred_scope:
+    min_hours: 1
+    preferred_max_days: 5
+    types: [micro task, bug fixing, Python script, Telegram bot, parser, scraping, API integration, automation, small backend, MVP, existing project modification, AI generated app rescue, deployment, webhook debugging, LLM integration]
+
+portfolio:
+  - id: ai_desk
+    name: AI Desk
+    tags: [Python, FastAPI, PostgreSQL, Docker, REST API, LLM, Telegram, integrations, dashboard, automation, deployment]
+    strengths: [backend, API integrations, AI integrations, production architecture]
+    description: AI-система автоматизации обращений: FastAPI/PostgreSQL backend, LLM-интеграции, dashboard и Docker deployment.
+  - id: mipt_assistant
+    name: MIPT Telecom AI Assistant
+    tags: [AI, backend, integrations, production, voice]
+    strengths: [production AI, integrations]
+    description: Коммерческий AI-ассистент с backend, внешними интеграциями и production deployment.
+  - id: lead_radar
+    name: Lead Radar
+    tags: [Python, Telethon, Telegram, scraping, monitoring, PostgreSQL, Docker, LLM]
+    strengths: [Telegram, monitoring, parsing, async Python, AI analysis]
+    description: Real-time мониторинг Telegram и внешних источников с AI scoring, deduplication и alerts.
+  - id: ai_analytics
+    name: AI Analytics Platform
+    tags: [API, analytics, scraping, AI, dashboard]
+    strengths: [external APIs, analytics, AI processing]
+    description: Веб-система анализа аккаунтов и контента с внешними API, AI-анализом и dashboard.

@@ -1,5 +1,14 @@
-# Укажите только каналы/группы, в которых уже состоит ваш Telegram-аккаунт.
-telegram: []
+# Only channels the authenticated Telegram account has already joined. These
+# feeds are intentionally soft-filtered: Qwen makes the final decision.
+telegram:
+  - {name: vibe_coding_jobs, entity: "@vibe_coding_jobs", enabled: true, tags: [freelance, vibecode_rescue, soft_filter]}
+  - {name: zerocode_jobs, entity: "@zerocode_jobs", enabled: true, tags: [freelance, automation, soft_filter]}
+  - {name: neiro_ai_vacancy, entity: "@neiro_ai_vacancy", enabled: true, tags: [freelance, ai, soft_filter]}
+  - {name: digitaltender, entity: "@digitaltender", enabled: true, tags: [freelance, projects, soft_filter]}
+  - {name: free_vacancies_it, entity: "@FreeVacanciesIT", enabled: true, tags: [freelance, projects, soft_filter]}
+  - {name: freelancehunt_projects, entity: "@FreelancehuntProjects", enabled: true, tags: [freelance, projects, soft_filter]}
+  - {name: rabota_v_ii, entity: "@rabota_v_ii", enabled: true, tags: [freelance, ai, soft_filter]}
+  - {name: workayte, entity: "@workayte", enabled: true, tags: [freelance, projects, soft_filter]}
 discord: []
 # Independent local Discord producer. Add only channels the account can read.
 # `name` is recorded with every accepted packet.
@@ -23,8 +32,11 @@ discourse:
     category_url: https://community.make.com/c/hire-a-pro/hire-help/74
     enabled: true
     tags: [jobs, direct_hire]
-  - name: cursor_support
-    category_url: https://forum.cursor.com/c/support/21
-    # General product-support traffic is currently too noisy for first rollout.
+  - name: make_latest
+    category_url: https://community.make.com/latest
+    enabled: true
+    tags: [shadow_leads, support]
+  - name: cursor_built_with
+    category_url: https://forum.cursor.com/c/showcase/built-with-cursor/18
     enabled: false
-    tags: [shadow_leads, vibecode_rescue]
+    tags: [shadow_leads, vibecode_rescue, support]
