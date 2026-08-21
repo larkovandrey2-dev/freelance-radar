@@ -29,16 +29,17 @@ async def health(request: Request) -> JSONResponse:
 
 @router.get("/health/sources")
 async def source_health(request: Request) -> dict:
+    settings = request.app.state.settings
     scanner = request.app.state.telegram_scanner
     discourse = request.app.state.discourse_adapter
     discord_process = request.app.state.discord_listener_process
     reddit = request.app.state.reddit_adapter
     local_gateway = request.app.state.local_gateway
-    targets = load_telegram_targets(request.app.state.settings.sources_path)
+    targets = load_telegram_targets(settings.sources_path)
     return {"status": "ok", "telegram": {"configured": scanner.configured,
             "connected": bool(scanner.client and scanner.client.is_connected()), "targets": len(targets),
             "resolved_targets": len(scanner.targets)},
-            "discourse": {"targets": len(load_discourse_targets(request.app.state.settings.sources_path)),
+            "discourse": {"targets": len(load_discourse_targets(settings.sources_path)),
                           "poller_running": bool(discourse._task and not discourse._task.done())},
             "discord": {"configured": settings.configured(settings.discord_user_token),
                         "targets": len(load_discord_listener_sources(settings.sources_path)),

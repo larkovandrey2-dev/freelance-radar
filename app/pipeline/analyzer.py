@@ -41,14 +41,14 @@ class YandexAnalyzer:
                            "capability_profile": self._capabilities()}, ensure_ascii=False)
         messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": f"<lead>{lead}</lead>"}]
         payload = {"modelUri": self.settings.resolved_yandex_model_uri,
-            "completionOptions": {"stream": False, "temperature": 0.1, "maxTokens": 800,
+            "completionOptions": {"stream": False, "temperature": 0.1, "maxTokens": 1200,
                                   "reasoningOptions": {"mode": "DISABLED"}},
             "jsonObject": True,
             "messages": [{"role": "system", "text": SYSTEM_PROMPT}, {"role": "user", "text": f"<lead>{lead}</lead>"}]}
         url = "https://ai.api.cloud.yandex.net/foundationModels/v1/completion"
         if self.settings.yandex_uses_openai_compat:
             payload = {"model": self.settings.active_yandex_model_uri, "messages": messages, "temperature": 0.1,
-                       "max_tokens": 800, "response_format": {"type": "json_object"},
+                       "max_tokens": 1200, "response_format": {"type": "json_object"},
                        "reasoning_effort": "none"}
             url = self.settings.yandex_openai_base_url.rstrip("/") + "/chat/completions"
         started = time.perf_counter()
