@@ -14,7 +14,7 @@ PURCHASE_STRONG = ("ищу разработчика", "ищем разработ
     "нужно починить", "нужно закончить", "looking for someone", "looking for a developer",
     "looking for developer", "looking for an engineer", "looking for a freelancer", "looking for contractor",
     "looking to hire", "need someone", "need a developer", "need developer", "need an engineer",
-    "need an expert", "need help building", "need help with", "can someone build", "can someone help",
+    "need an expert", "need help", "can someone build", "can someone help",
     "can anyone help", "who can build", "who can fix", "who can implement", "willing to pay",
     "paid project", "paid task", "paid gig", "need this built", "need this fixed", "need this done",
     "need this automated", "need this finished", "need this integrated")
