@@ -9,6 +9,11 @@ telegram:
   - {name: freelancehunt_projects, entity: "@FreelancehuntProjects", enabled: true, tags: [freelance, projects, soft_filter]}
   - {name: rabota_v_ii, entity: "@rabota_v_ii", enabled: true, tags: [freelance, ai, soft_filter]}
   - {name: workayte, entity: "@workayte", enabled: true, tags: [freelance, projects, soft_filter]}
+  # Additional public project feeds.  The final model and hard "for hire"
+  # rejection remain responsible for filtering their broader vacancy traffic.
+  - {name: nocodejob, entity: "@nocodejob", enabled: true, tags: [freelance, automation, nocode, soft_filter]}
+  - {name: itjobs_nocode, entity: "@itjobs_nocode", enabled: true, tags: [freelance, automation, vibecode_rescue, soft_filter]}
+  - {name: freelancetaverna, entity: "@freelancetaverna", enabled: true, tags: [freelance, python, ai, soft_filter]}
 discord: []
 # Independent local Discord producer. Add only channels the account can read.
 # `name` is recorded with every accepted packet.
