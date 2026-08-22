@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from app.network.health import HealthState, notifier_configured, postgres_available, proxy_available, yandex_available
 from app.sources.telegram import load_telegram_targets
 from app.sources.discourse import load_discourse_targets
+from app.sources.airtable import load_airtable_targets
 from app.sources.local_stream_gateway import load_discord_listener_sources
 
 router = APIRouter(tags=["health"])
@@ -32,6 +33,7 @@ async def source_health(request: Request) -> dict:
     settings = request.app.state.settings
     scanner = request.app.state.telegram_scanner
     discourse = request.app.state.discourse_adapter
+    airtable = request.app.state.airtable_adapter
     discord_process = request.app.state.discord_listener_process
     reddit = request.app.state.reddit_adapter
     local_gateway = request.app.state.local_gateway
@@ -41,6 +43,8 @@ async def source_health(request: Request) -> dict:
             "resolved_targets": len(scanner.targets)},
             "discourse": {"targets": len(load_discourse_targets(settings.sources_path)),
                           "poller_running": bool(discourse._task and not discourse._task.done())},
+            "airtable": {"targets": len(load_airtable_targets(settings.sources_path)),
+                          "poller_running": bool(airtable._task and not airtable._task.done())},
             "discord": {"configured": settings.configured(settings.discord_user_token),
                         "targets": len(load_discord_listener_sources(settings.sources_path)),
                         "running": bool(discord_process and discord_process.returncode is None)},

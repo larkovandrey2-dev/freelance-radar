@@ -40,3 +40,11 @@ discourse:
     category_url: https://forum.cursor.com/c/showcase/built-with-cursor/18
     enabled: false
     tags: [shadow_leads, vibecode_rescue, support]
+
+# Airtable Community uses a different public forum engine, so it is collected
+# by its dedicated read-only adapter rather than the Discourse one above.
+airtable:
+  - name: airtable_jobs_board
+    category_url: https://community.airtable.com/jobs-board-16
+    enabled: true
+    tags: [jobs, direct_hire, airtable, automation]

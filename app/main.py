@@ -15,6 +15,7 @@ from app.config import get_settings
 from app.sources.telegram import TelegramScanner
 from app.storage.models import Base
 from app.sources.discourse import DiscourseAdapter
+from app.sources.airtable import AirtableAdapter
 from app.sources.local_stream_gateway import LocalStreamGateway
 from app.sources.reddit import RedditAdapter
 from app.sources.local_stream_gateway import load_discord_listener_sources
@@ -61,6 +62,9 @@ async def lifespan(app: FastAPI):
     discourse = DiscourseAdapter(settings, sessions)
     app.state.discourse_adapter = discourse
     await discourse.start()
+    airtable = AirtableAdapter(settings, sessions)
+    app.state.airtable_adapter = airtable
+    await airtable.start()
     reddit = RedditAdapter(settings, sessions); app.state.reddit_adapter = reddit
     await reddit.start()
     local_gateway: LocalStreamGateway | None = None
@@ -106,6 +110,7 @@ async def lifespan(app: FastAPI):
             pass
         await scanner.stop()
         await discourse.stop()
+        await airtable.stop()
         await reddit.stop()
         if discord_listener_process and discord_listener_process.returncode is None:
             discord_listener_process.terminate()
